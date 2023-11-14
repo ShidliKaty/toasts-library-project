@@ -6,7 +6,7 @@ type ToastContextType = {
     addToast: (
         text: string,
         options?: Partial<ToastOptions & { id: string }>,
-    ) => void;
+    ) => string;
     removeToast: (id: string) => void;
 };
 export const ToastContext = createContext<ToastContextType | null>(null);
@@ -52,6 +52,8 @@ export function ToastProvider({ children }: ToastProviderProps) {
         if (options.autoDismiss) {
             setTimeout(() => removeToast(id), options.autoDismissTimeout);
         }
+
+        return id;
     }
 
     function removeToast(id: string) {
