@@ -6,8 +6,6 @@ function App() {
     const { toasts, addToast, removeToast } = useToast();
     const inputRef = useRef<HTMLInputElement>(null);
 
-    console.log(toasts);
-
     function createToast() {
         if (inputRef.current == null || inputRef.current.value === '') return;
         addToast(inputRef.current.value);

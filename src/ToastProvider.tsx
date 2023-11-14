@@ -1,4 +1,5 @@
 import { ReactNode, createContext, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 type ToastContextType = {
     toasts: Toast[];
@@ -55,9 +56,52 @@ export function ToastProvider({ children }: ToastProviderProps) {
         });
     }
 
+    const toastsByPosition = toasts.reduce(
+        (grouped, toast) => {
+            const { position } = toast.options;
+            if (grouped[position] == null) {
+                grouped[position] = [];
+            }
+            grouped[position].push(toast);
+
+            return grouped;
+        },
+        {} as Record<string, Toast[]>,
+    );
+
     return (
         <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
             {children}
+            {createPortal(
+                Object.entries(toastsByPosition).map(([position, toasts]) => (
+                    <div
+                        key={position}
+                        className={`toast-container ${position}`}
+                    >
+                        {toasts.map((toast) => (
+                            <Toast
+                                text={toast.text}
+                                key={toast.id}
+                                remove={() => removeToast(toast.id)}
+                            />
+                        ))}
+                    </div>
+                )),
+                document.getElementById('toast-container') as HTMLDivElement,
+            )}
         </ToastContext.Provider>
+    );
+}
+
+type ToastType = {
+    text: string;
+    remove: () => void;
+};
+
+function Toast({ text, remove }: ToastType) {
+    return (
+        <div onClick={remove} className="toast">
+            {text}
+        </div>
     );
 }
