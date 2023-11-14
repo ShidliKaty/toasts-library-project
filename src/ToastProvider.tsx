@@ -48,6 +48,10 @@ export function ToastProvider({ children }: ToastProviderProps) {
         setToasts((currentToasts) => {
             return [...currentToasts, { text, options, id }];
         });
+
+        if (options.autoDismiss) {
+            setTimeout(() => removeToast(id), options.autoDismissTimeout);
+        }
     }
 
     function removeToast(id: string) {
